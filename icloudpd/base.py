@@ -75,6 +75,11 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     type=click.IntRange(0),
 )
 @click.option(
+    "--skip-recent",
+    help="Number of recent photos to skip over before downloading (default: download all photos)",
+    type=click.IntRange(0),
+)
+@click.option(
     "--until-found",
     help="Download most recently added photos until we find x number of "
     "previously downloaded consecutive photos (default: download all photos)",
@@ -204,6 +209,7 @@ def main(
         size,
         live_photo_size,
         recent,
+        skip_recent,
         until_found,
         album,
         list_albums,
@@ -320,6 +326,14 @@ def main(
     photos.exception_handler = photos_exception_handler
 
     photos_count = len(photos)
+
+    # Optional: First skip the x most recent photos.
+    if skip_recent is not None:
+        photos_count -= skip_recent
+        if photos_count < 1:
+            print(f"Nothing to download: skip_recent option is higher than the number of photos ({photos_count}).")
+            sys.exit(0)
+        photos = itertools.islice(photos, skip_recent, None)
 
     # Optional: Only download the x most recent photos.
     if recent is not None:
