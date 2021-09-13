@@ -351,15 +351,17 @@ def main(
     plural_suffix = "" if photos_count == 1 else "s"
     video_suffix = ""
     photos_count_str = "the first" if photos_count == 1 else photos_count
+    skip_recent_str = "" if skip_recent is None else f" (after skipping {skip_recent} recent items)"
     if not skip_videos:
         video_suffix = " or video" if photos_count == 1 else " and videos"
     logger.info(
-        "Downloading %s %s photo%s%s to %s ...",
+        "Downloading %s %s photo%s%s to %s ...%s",
         photos_count_str,
         size,
         plural_suffix,
         video_suffix,
         directory,
+        skip_recent_str,
     )
 
     # Use only ASCII characters in progress bar
